@@ -178,36 +178,37 @@ puzzle(99, In, SW) :- c99(In, SW, 1).
 %Resolución de Punto 2.
 menor_solucion(N, Entrada, SW, MenorSolucion) :-
     findall(In,puzzle(N,In,SW),Outs),
-    member(MenorSolucion,Outs),
+    puzzle(N,MenorSolucion,SW),
     diff(Entrada,MenorSolucion,Min),
     menor_diff(Entrada,Outs,Min).
+    
 
 %¿Cual es la mínima diferencia entre la lista X y las listas de listas?
 menor_diff(X,[Y|YS],Min) :-
     diff(X,Y,Min),
     menor_diff(X,YS,Diff),
-    Diff >= Min.
+    Diff >= Min, !.
 
 menor_diff(X,[Y|YS],Min) :-
     diff(X,Y,Diff),
     menor_diff(X,YS,Min),
-    Diff > Min.
+    Diff > Min, !.
 
-menor_diff(X,[],Min) :- length(X,Min).
+menor_diff(X,[],Min) :- length(X,Min), !.
 
 %¿Las listas tienen "Diff" cantidad de elementos diferentes?
 diff([],[],0).
 
 diff([X|XS], [Y|YS], Diff) :-
     X == Y,
-    diff(XS,YS,Diff).
+    diff(XS,YS,Diff), !.
     
 
 diff([X|XS], [Y|YS], Diff) :-
     X \= Y,
     diff(XS,YS,Diff2),
-    Diff is Diff2 + 1.
+    Diff is Diff2 + 1, !.
 
 %¿X pertenece a la lista dada?
 member(X, [X|_]).
-member(X, [Y|Xs]) :- X \= Y, member(X, Xs).
+member(X, [Y|Xs]) :- X \= Y, member(X, Xs), !.
