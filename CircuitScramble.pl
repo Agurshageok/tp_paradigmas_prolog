@@ -154,10 +154,6 @@ c99([A,B,C,D,E,F,G,H], [SW1,SW2], Resultado) :-
     xor(U, Y, Z),
     final([V, AA, Z], Resultado).
 
-
-
-
-
 circuit(A, B, C, D) :- 
     not(B, X),
     and(A, X, U),
@@ -165,8 +161,9 @@ circuit(A, B, C, D) :-
     and(B, C, V),
     not(W, D).
 
+%Resolución de Punto 1.
 puzzle(1, In, SW) :- c1(In, SW, 1).
-puzzle(2, In, SW) :- c2(In, SW, 1).
+puzzle(2, In, SW) :- c2(In, SW, 1), length(In,4).
 puzzle(3, In, SW) :- c3(In, SW, 1).
 puzzle(4, In, SW) :- c4(In, SW, 1).
 puzzle(5, In, SW) :- c5(In, SW, 1).
@@ -177,3 +174,40 @@ puzzle(9, In, SW) :- c9(In, SW, 1).
 puzzle(10, In, SW) :- c10(In, SW, 1).
 puzzle(11, In, SW) :- c10(In, SW, 1).
 puzzle(99, In, SW) :- c99(In, SW, 1).
+
+%Resolución de Punto 2.
+menor_solucion(N, Entrada, SW, MenorSolucion) :-
+    findall(In,puzzle(N,In,SW),Outs),
+    member(MenorSolucion,Outs),
+    diff(Entrada,MenorSolucion,Min),
+    menor_diff(Entrada,Outs,Min).
+
+%¿Cual es la mínima diferencia entre la lista X y las listas de listas?
+menor_diff(X,[Y|YS],Min) :-
+    diff(X,Y,Min),
+    menor_diff(X,YS,Diff),
+    Diff >= Min.
+
+menor_diff(X,[Y|YS],Min) :-
+    diff(X,Y,Diff),
+    menor_diff(X,YS,Min),
+    Diff > Min.
+
+menor_diff(X,[],Min) :- length(X,Min).
+
+%¿Las listas tienen "Diff" cantidad de elementos diferentes?
+diff([],[],0).
+
+diff([X|XS], [Y|YS], Diff) :-
+    X == Y,
+    diff(XS,YS,Diff).
+    
+
+diff([X|XS], [Y|YS], Diff) :-
+    X \= Y,
+    diff(XS,YS,Diff2),
+    Diff is Diff2 + 1.
+
+%¿X pertenece a la lista dada?
+member(X, [X|_]).
+member(X, [Y|Xs]) :- X \= Y, member(X, Xs).
